@@ -53,27 +53,11 @@ public class InvertedIndex implements BooleanSearch{
 
     /*Implementation of BooleanSearch interface methods*/
 
-    /**@return list of all files containing both
-     * @param a AND
-     * @param b*/
-    public List<String> AND(String a, String b) {
-        List<String> filesContainingBoth = new LinkedList<>(invertedIndex.get(a));
-        filesContainingBoth.retainAll(invertedIndex.get(b));
-        return filesContainingBoth;
-    }
-
     /**@return list of all files containing
-     * @param a OR
-     * @param b*/
-    public List<String> OR(String a, String b){
-        List<String> filesContainingOne = new LinkedList<>(invertedIndex.get(a));
-        filesContainingOne.addAll(invertedIndex.get(b));
-
-        // Convert the list to a set to remove duplicates
-        Set<String> setWithoutDuplicates = new HashSet<>(filesContainingOne);
-
-        // Convert the set back to a list
-        return new LinkedList<>(setWithoutDuplicates);
+     * @param word*/
+    @Override
+    public List<String> filesContainingWord(String word) {
+        return new LinkedList<>(invertedIndex.get(word));
     }
 
     /**@return list of all files NOT containing
@@ -89,21 +73,6 @@ public class InvertedIndex implements BooleanSearch{
         filesNotContaining.removeAll(filesContainingA);
 
         return filesNotContaining;
-    }
-
-    @Override
-    public List<String> AND(List<String> a, String b) {
-        List<String> filesContainingBoth = new LinkedList<>(a);
-        filesContainingBoth.retainAll(invertedIndex.get(b));
-        return filesContainingBoth;
-    }
-
-    @Override
-    public List<String> OR(List<String> a, String b) {
-        List<String> filesContainingOne = new LinkedList<>(a);
-        filesContainingOne.addAll(invertedIndex.get(b));
-        Set<String> setWithoutDuplicates = new HashSet<>(filesContainingOne);
-        return new LinkedList<>(setWithoutDuplicates);
     }
 
     @Override
