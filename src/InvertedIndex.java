@@ -50,12 +50,13 @@ public class InvertedIndex implements BooleanSearch{
         }
     }
 
+
     /*Implementation of BooleanSearch interface methods*/
 
     /**@return list of all files containing both
      * @param a AND
      * @param b*/
-    public List<String> AND(String a, String b){
+    public List<String> AND(String a, String b) {
         List<String> filesContainingBoth = new LinkedList<>(invertedIndex.get(a));
         filesContainingBoth.retainAll(invertedIndex.get(b));
         return filesContainingBoth;
@@ -83,12 +84,39 @@ public class InvertedIndex implements BooleanSearch{
             namesOfAllFiles.add(file.getName());
         }
         List<String> filesNotContaining = new LinkedList<>(namesOfAllFiles);
-        List<String> filesContainingA = invertedIndex.getOrDefault(a, Collections.emptyList());
+        List<String> filesContainingA = new LinkedList<>(invertedIndex.getOrDefault(a, Collections.emptyList()));
 
         filesNotContaining.removeAll(filesContainingA);
 
         return filesNotContaining;
     }
+
+    @Override
+    public List<String> AND(List<String> a, String b) {
+        List<String> filesContainingBoth = new LinkedList<>(a);
+        filesContainingBoth.retainAll(invertedIndex.get(b));
+        return filesContainingBoth;
+    }
+
+    @Override
+    public List<String> OR(List<String> a, String b) {
+        List<String> filesContainingOne = new LinkedList<>(a);
+        filesContainingOne.addAll(invertedIndex.get(b));
+        Set<String> setWithoutDuplicates = new HashSet<>(filesContainingOne);
+        return new LinkedList<>(setWithoutDuplicates);
+    }
+
+    @Override
+    public List<String> NOT(List<String> a) {
+        List<String> namesOfAllFiles = new LinkedList<>();
+        for(File file : fileList)
+            namesOfAllFiles.add(file.getName());
+
+        List<String> filesNotContaining = new LinkedList<>(namesOfAllFiles);
+        filesNotContaining.removeAll(a);
+        return filesNotContaining;
+    }
+
 
     @Override
     public String toString(){
