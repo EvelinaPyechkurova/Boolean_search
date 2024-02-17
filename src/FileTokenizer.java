@@ -71,7 +71,7 @@ public class FileTokenizer {
         uniqueWordsSet = new TreeSet<>(wordsList);
     }
 
-    /** @return List of all words read from the input file */
+    /** creates List of all words read from the input file */
     private void readWords(File file){
         StringTokenizer tokenizer;
 
