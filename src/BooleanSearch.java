@@ -2,100 +2,37 @@ import java.util.*;
 
 public interface BooleanSearch {
 
-    default List<String> doBooleanSearch(String request) {
-        Stack<Object> stack = new Stack<>();
+    /**@return set of filenames that satisfy the
+     @request which is request to boolean search*/
+    default Set<String> doBooleanSearch(String request){
+        Stack<List<String>> stack = new Stack<>();
         String requestRPN = convertToRPN(request);
-
         for(String token : requestRPN.split(" ")){
             if(isOperator(token)){
-                switch (token) {
-                    case "NOT": {
-                        Object a = stack.pop();
-                        if (a instanceof String) {
-                            String strA = (String) a;
-                            stack.push(NOT(strA));
-                        } else if (a instanceof List) {
-                            List<String> lstA = (List<String>) a;
-                            stack.push(NOT(lstA));
-                        } else {
-                            throw new IllegalArgumentException(token + " is from illegal type: " + token.getClass().getSimpleName());
-                        }
-
+                switch (token){
+                    case "NOT" : {
+                        stack.push(NOT(stack.pop()));
                         break;
                     }
-                    case "AND": {
-                        Object a = stack.pop();
-                        Object b = stack.pop();
-                        if (a instanceof String) {
-                            String strA = (String) a;
-                            if (b instanceof String) {
-                                String strB = (String) b;
-                                stack.push(AND(strA, strB));
-                            } else if (b instanceof List) {
-                                List lstB = (List<String>) b;
-                                stack.push(AND(strA, lstB));
-                            } else {
-                                throw new IllegalArgumentException(token + " is from illegal type: " + token.getClass().getSimpleName());
-                            }
-
-                        } else if (a instanceof List) {
-                            List<String> lstA = (List<String>) a;
-                            if (b instanceof String) {
-                                String strB = (String) b;
-                                stack.push(AND(lstA, strB));
-                            } else if (b instanceof List) {
-                                List lstB = (List<String>) b;
-                                stack.push(AND(lstA, lstB));
-                            } else {
-                                throw new IllegalArgumentException(token + " is from illegal type: " + token.getClass().getSimpleName());
-                            }
-                        } else {
-                            throw new IllegalArgumentException(token + " is from illegal type: " + token.getClass().getSimpleName());
-                        }
-
+                    case "AND" : {
+                        stack.push(AND(stack.pop(), stack.pop()));
                         break;
                     }
-                    case "OR": {
-                        Object a = stack.pop();
-                        Object b = stack.pop();
-                        if (a instanceof String) {
-                            String strA = (String) a;
-                            if (b instanceof String) {
-                                String strB = (String) b;
-                                stack.push(OR(strA, strB));
-                            } else if (b instanceof List) {
-                                List lstB = (List<String>) b;
-                                stack.push(OR(strA, lstB));
-                            } else {
-                                throw new IllegalArgumentException(token + " is from illegal type: " + token.getClass().getSimpleName());
-                            }
-
-                        } else if (a instanceof List) {
-                            List<String> lstA = (List<String>) a;
-                            if (b instanceof String) {
-                                String strB = (String) b;
-                                stack.push(OR(lstA, strB));
-                            } else if (b instanceof List) {
-                                List lstB = (List<String>) b;
-                                stack.push(OR(lstA, lstB));
-                            } else {
-                                throw new IllegalArgumentException(token + " is from illegal type: " + token.getClass().getSimpleName());
-                            }
-                        } else {
-                            throw new IllegalArgumentException(token + " is from illegal type: " + token.getClass().getSimpleName());
-                        }
+                    case "OR" : {
+                        stack.push(OR(stack.pop(), stack.pop()));
                         break;
                     }
                 }
-
             }else{
-                stack.push(token);
+                stack.push(filesContainingWord(token));
             }
         }
 
-        return (List<String>)stack.pop();
+        return new HashSet<>(stack.pop());
     }
 
+    /**@return
+     * @param request converted to reverse polish notation*/
     private String convertToRPN(String request){
         List<String> output = new LinkedList<>();
         Stack<String> operators = new Stack<>();
@@ -123,53 +60,43 @@ public interface BooleanSearch {
         while (!operators.isEmpty())
             output.add(operators.pop());
 
+        System.out.println(output);
         return String.join(" ", output);
     }
 
-    private boolean isOperator(String request){
-        return request.equals("AND") || request.equals("OR") || request.equals("NOT");
+    /**@return true if
+     * @param token is boolean operator,
+     * false otherwise*/
+    private boolean isOperator(String token){
+        return token.equals("AND") || token.equals("OR") || token.equals("NOT");
     }
 
+    /**abstract method that needs to be implemented
+     * @return list of names of files containing
+     * @param word */
     List<String> filesContainingWord(String word);
 
-    private List<String> AND(String a, String b){
-        return AND(filesContainingWord(a), filesContainingWord(b));
-    }
+    /**abstract method that needs to be implemented
+     * @return list of names of files in data structure not containing
+     * @param word */
+    List<String> NOT(List<String> word);
 
-    private List<String> OR(String a, String b){
-        return OR(filesContainingWord(a), filesContainingWord(a));
-    }
-
-    List<String> NOT(String a);
-    private List<String> AND(List<String> a, String b){
-        return AND(a, filesContainingWord(b));
-    }
-
-    private List<String> OR(List<String> a, String b){
-        return OR(a, filesContainingWord(b));
-    }
-
-    List<String> NOT(List<String> a);
-
-    private List<String> AND(String a, List<String> b){
-        return AND(b, a);
-    }
-
-    private List<String> OR(String a, List<String> b){
-        return OR(b, a);
-    }
-
+    /**@return intersection of
+     * @param a and
+     * @param b */
     private List<String> AND(List<String> a, List<String> b){
         List<String> filesContainingBoth = new LinkedList<>(a);
         filesContainingBoth.retainAll(b);
         return filesContainingBoth;
     }
 
+    /**@return union of
+     * @param a and
+     * @param b */
     private List<String> OR(List<String> a, List<String> b){
         List<String> filesContainingOne = new LinkedList<>(a);
-        List<String> filesContainingOnlyB = new LinkedList<>(b);
-        filesContainingOnlyB.retainAll(a);
-        filesContainingOne.addAll(filesContainingOnlyB);
-        return filesContainingOne;
+        filesContainingOne.addAll(b);
+        Set<String> withoutDuplicates = new HashSet<>(filesContainingOne);
+        return new LinkedList<>(withoutDuplicates);
     }
 }
