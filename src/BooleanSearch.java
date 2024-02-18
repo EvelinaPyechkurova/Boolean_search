@@ -28,7 +28,12 @@ public interface BooleanSearch {
             }
         }
 
-        return new HashSet<>(stack.pop());
+        List<String> result = stack.pop();
+        while(!stack.isEmpty()){
+            result = AND(result, stack.pop());
+        }
+
+        return new HashSet<>(result);
     }
 
     /**@return
@@ -60,7 +65,6 @@ public interface BooleanSearch {
         while (!operators.isEmpty())
             output.add(operators.pop());
 
-        System.out.println(output);
         return String.join(" ", output);
     }
 

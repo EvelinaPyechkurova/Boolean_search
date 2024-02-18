@@ -27,16 +27,17 @@ public class Main {
         ii.saveResultsToFile("Inverted index");
 
         System.out.println(ii.doBooleanSearch("Harry"));
+        System.out.println(ii.doBooleanSearch("Cedric"));
+        System.out.println(ii.doBooleanSearch("Harry NOT Cedric"));
         System.out.println(ii.doBooleanSearch("Harry AND Potter"));
         System.out.println(ii.doBooleanSearch("Harry AND Potter NOT Horcrux"));
         System.out.println(ii.doBooleanSearch("NOT Luna AND Harry OR Bilbo"));
         System.out.println(ii.doBooleanSearch("Harry AND Luna OR Bilbo"));
-        System.out.println(ii.doBooleanSearch("NOT ( Ron AND HARRY ) AND NOT Frodo"));
-        System.out.println(ii.doBooleanSearch("Cedric"));
+        System.out.println(ii.doBooleanSearch("NOT ( Ron AND HARRY ) NOT Frodo"));
         System.out.println(ii.doBooleanSearch("Cedric OR Bilbo"));
         System.out.println(ii.doBooleanSearch("( Harry AND Luna NOT Cedric )"));
         System.out.println(ii.doBooleanSearch("Gandalf AND Aragorn"));
-        System.out.println(ii.doBooleanSearch("( Gandalf AND Aragorn ) OR ( ( Harry AND Luna ) AND NOT Cedric )"));
+        System.out.println(ii.doBooleanSearch("( Gandalf AND Aragorn ) OR ( ( Harry AND Luna ) NOT Cedric )"));
 
        /* Scanner scanner = new Scanner(System.in);
         System.out.println("Print \"yes\" if you want to search your own phrase in data collection");
