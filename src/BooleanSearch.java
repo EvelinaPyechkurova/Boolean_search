@@ -1,9 +1,11 @@
+/*Interphase that provide set of tools for doing boolean search*/
+
 import java.util.*;
 
 public interface BooleanSearch {
 
     /**@return set of filenames that satisfy the
-     @request which is request to boolean search*/
+     @param request which is request to boolean search*/
     default Set<String> doBooleanSearch(String request){
         Stack<List<String>> stack = new Stack<>();
         String requestRPN = convertToRPN(request);
@@ -11,7 +13,10 @@ public interface BooleanSearch {
             if(isOperator(token)){
                 switch (token){
                     case "NOT" : {
-                        stack.push(NOT(stack.pop()));
+                        List<String> filesNotContainingWord = NOT(stack.pop());
+                        List<String> result  = stack.isEmpty() ? filesNotContainingWord :
+                                AND(filesNotContainingWord, stack.pop());
+                        stack.push(result);
                         break;
                     }
                     case "AND" : {
@@ -29,9 +34,6 @@ public interface BooleanSearch {
         }
 
         List<String> result = stack.pop();
-        while(!stack.isEmpty()){
-            result = AND(result, stack.pop());
-        }
 
         return new HashSet<>(result);
     }
