@@ -14,6 +14,7 @@ import java.util.*;
 public class Main {
     public static void main(String[] args) {
 
+        // Creating file collection
         File data = new File("data");
         List<File> fileList = new ArrayList<>();
 
@@ -23,21 +24,31 @@ public class Main {
                 fileList.addAll(Arrays.asList(dataFiles));
         }
 
+        // Creating inverted index
         InvertedIndex ii = new InvertedIndex(fileList);
         ii.saveResultsToFile("Inverted index");
 
-        System.out.println(ii.doBooleanSearch("Harry"));
-        System.out.println(ii.doBooleanSearch("Cedric"));
-        System.out.println(ii.doBooleanSearch("Harry NOT Cedric"));
-        System.out.println(ii.doBooleanSearch("Harry AND Potter"));
-        System.out.println(ii.doBooleanSearch("Harry AND Potter NOT Horcrux"));
-        System.out.println(ii.doBooleanSearch("NOT Luna AND Harry OR Bilbo"));
-        System.out.println(ii.doBooleanSearch("Harry AND Luna OR Bilbo"));
-        System.out.println(ii.doBooleanSearch("NOT ( Ron AND HARRY ) NOT Frodo"));
-        System.out.println(ii.doBooleanSearch("Cedric OR Bilbo"));
-        System.out.println(ii.doBooleanSearch("( Harry AND Luna NOT Cedric )"));
-        System.out.println(ii.doBooleanSearch("Gandalf AND Aragorn"));
-        System.out.println(ii.doBooleanSearch("( Gandalf AND Aragorn ) OR ( ( Harry AND Luna ) NOT Cedric )"));
+        // Creating incidence matrix
+        IncidenceMatrix im = new IncidenceMatrix(fileList);
+        im.saveResultsToFile("Incidence matrix");
+
+        // Testing boolean search on inverted index and igncidence matrix
+        String[] requests = {"Harry", "Cedric", "Harry NOT Cedric", "Harry AND Potter", "Harry AND Potter NOT Horcrux",
+                "NOT Luna AND Harry OR Bilbo", "Harry AND Luna OR Bilbo", "NOT ( Ron AND HARRY ) NOT Frodo",
+                "Cedric OR Bilbo", "( Harry AND Luna NOT Cedric )", "Gandalf AND Aragorn",
+                "( Gandalf AND Aragorn ) OR ( ( Harry AND Luna ) NOT Cedric )"};
+
+
+        for(String request : requests) {
+            Set<String> result = ii.doBooleanSearch(request);
+            if (!result.equals(im.doBooleanSearch(request))) {
+                System.out.println("ERROR! Results of boolean search on same request using different data " +
+                        "structures are different!");
+                break;
+            }else {
+                System.out.println("REQUEST: "+request + "\nRESULT: " + result);
+            }
+        }
 
        /* Scanner scanner = new Scanner(System.in);
         System.out.println("Print \"yes\" if you want to search your own phrase in data collection");
@@ -54,5 +65,6 @@ public class Main {
             System.out.println("Print \"yes\" if you want to continue searching your own phrase in data collection");
             userAnswer = scanner.nextLine();
         }*/
+
     }
 }

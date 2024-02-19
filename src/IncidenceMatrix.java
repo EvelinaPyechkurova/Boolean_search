@@ -79,7 +79,7 @@ public class IncidenceMatrix implements BooleanSearch{
 
     /**Saves Inverted Index data structure to file
      * @param filename */
-    public void saveResults(String filename){
+    public void saveResultsToFile(String filename){
         try {
             BufferedWriter writer = new BufferedWriter(new FileWriter(filename));
             writer.write(toString());

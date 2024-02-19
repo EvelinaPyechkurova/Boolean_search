@@ -38,6 +38,30 @@ public class InvertedIndex implements BooleanSearch{
         }
     }
 
+    /*Implementation of BooleanSearch interface methods*/
+
+    /**@return list of all files containing elements of
+     * @param word*/
+    @Override
+    public List<String> filesContainingWord(String word) {
+        return new LinkedList<>(invertedIndex.get(word));
+    }
+
+    /**@return list of all files NOT containing
+     * @param a*/
+    @Override
+    public List<String> NOT(List<String> a) {
+        List<String> namesOfAllFiles = new LinkedList<>();
+        for(File file : fileList)
+            namesOfAllFiles.add(file.getName());
+
+        List<String> filesNotContaining = new LinkedList<>(namesOfAllFiles);
+        filesNotContaining.removeAll(a);
+        return filesNotContaining;
+    }
+
+    /**Saves Inverted Index data structure to file
+     * @param filename */
     public void saveResultsToFile(String filename) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename))) {
             writer.write("Inverted index:\n");
@@ -48,42 +72,6 @@ public class InvertedIndex implements BooleanSearch{
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-
-    /*Implementation of BooleanSearch interface methods*/
-
-    /**@return list of all files containing
-     * @param word*/
-    @Override
-    public List<String> filesContainingWord(String word) {
-        return new LinkedList<>(invertedIndex.get(word));
-    }
-
-    /**@return list of all files NOT containing
-     * @param a*/
-    public List<String> NOT(String a){
-        List<String> namesOfAllFiles = new LinkedList<>();
-        for(File file : fileList){
-            namesOfAllFiles.add(file.getName());
-        }
-        List<String> filesNotContaining = new LinkedList<>(namesOfAllFiles);
-        List<String> filesContainingA = new LinkedList<>(invertedIndex.getOrDefault(a, Collections.emptyList()));
-
-        filesNotContaining.removeAll(filesContainingA);
-
-        return filesNotContaining;
-    }
-
-    @Override
-    public List<String> NOT(List<String> a) {
-        List<String> namesOfAllFiles = new LinkedList<>();
-        for(File file : fileList)
-            namesOfAllFiles.add(file.getName());
-
-        List<String> filesNotContaining = new LinkedList<>(namesOfAllFiles);
-        filesNotContaining.removeAll(a);
-        return filesNotContaining;
     }
 
 
