@@ -24,13 +24,26 @@ public class Main {
                 fileList.addAll(Arrays.asList(dataFiles));
         }
 
-        // Creating inverted index
+        // Measure time for creating Inverted Index
+        long startTimeII = System.nanoTime();
         InvertedIndex ii = new InvertedIndex(fileList);
         ii.saveResultsToFile("Inverted index");
+        long endTimeII = System.nanoTime();
+        long durationII = endTimeII - startTimeII;
 
-        // Creating incidence matrix
+        // Measure time for creating Incidence Matrix
+        long startTimeIM = System.nanoTime();
         IncidenceMatrix im = new IncidenceMatrix(fileList);
         im.saveResultsToFile("Incidence matrix");
+        long endTimeIM = System.nanoTime();
+        long durationIM = endTimeIM - startTimeIM;
+
+        // Convert nanoseconds to seconds for easier interpretation
+        double durationIISec = durationII / 1_000_000_000.0;
+        double durationIMSec = durationIM / 1_000_000_000.0;
+
+        System.out.printf("Time required for creating and saving Inverted Index: %.2f seconds%n", durationIISec);
+        System.out.printf("Time required for creating and saving Incidence Matrix: %.2f seconds%n", durationIMSec);
 
         // Testing boolean search on inverted index and igncidence matrix
         String[] requests = {"Harry", "Cedric", "Harry NOT Cedric", "Harry AND Potter", "Harry AND Potter NOT Horcrux",
